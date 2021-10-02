@@ -1,14 +1,24 @@
 import discord
 import os
+from discord.ext import commands
 from dotenv import load_dotenv
 import requests
 import json
 
+intents = discord.Intents.default()
+intents.typing = False
+intents.presences = False
+intents.messages = True
+intents.guilds = True
+intents.members = True
+
+
 insults_URL = "https://evilinsult.com/generate_insult.php?lang=en&type=json"
+description = "Building your character one line at a time"
 
 load_dotenv()
 
-client = discord.Client()
+bot = commands.Bot(command_prefix="!", description=description, intents=intents)
 
 def get_insult():
     response = requests.get(insults_URL)
@@ -20,19 +30,16 @@ def get_insult():
 
 
 # When Bob is fully loaded
-@client.event
+@bot.event
 async def on_ready():
-    print("Bob is Building as {0.user}".format(client))
+    print("Bob is Building as {0.user}".format(bot))
 
 
 # When Bob receives a message
-@client.event
-async def on_message(message):
-    if message.author == client.user: # if it's bob's message, ignore it
-        return
+@bot.command()
+async def build(ctx, arg):
 
-    if message.content.startswith("!build"): # if someone sends a message with the build prefix
-        insult = get_insult()
-        await message.channel.send(insult)
+    insult = get_insult()
+    await ctx.send(insult)
 
-client.run(os.getenv('TOKEN'))
+bot.run(os.getenv('TOKEN'))
