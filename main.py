@@ -32,7 +32,11 @@ def get_insult():
 def search_members(username):
     for guild in bot.guilds:
         for member in guild.members:
-            if member.name.startswith(username):
+
+            mName = member.name.lower()
+            username = username.lower()
+
+            if mName.startswith(username):
                 print("Member Found: " + member.name)
                 return(member)
     print("Did not find user")
